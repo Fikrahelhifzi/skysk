@@ -1,0 +1,12 @@
+{
+  "name": "sky-striker-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sky Striker (port dari notebook pygame) untuk browser HP dan laptop.",
+  "scripts": {
+    "test": "node tests/logic.test.mjs",
+    "parity": "python3 tests/parity/run_parity.py --notebook sky_striker.ipynb",
+    "serve": "python3 -m http.server 8000"
+  }
+}

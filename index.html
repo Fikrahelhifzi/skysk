@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#06081a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Sky Striker: game tembak pesawat 20 level dengan 4 boss. Bisa dimainkan di HP dan laptop.">
+  <title>Sky Striker</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <canvas id="screen" aria-hidden="true"></canvas>
+
+    <!-- Area dunia game: HUD dan tulisan level ditempatkan tepat di atasnya -->
+    <div id="stage" class="stage">
+      <div id="hud" class="hud" hidden>
+        <div class="hud-panel hud-left">
+          <div class="hud-row"><span id="hud-level" class="t-small">LEVEL 1 / 20</span><span id="hud-plane" class="t-tiny">FALCON</span></div>
+          <div class="hud-row"><span class="bar bar-hp"><i id="hud-hp"></i></span><span id="hud-hp-text" class="t-tiny">100/100</span></div>
+          <canvas id="hud-lives" class="lives"></canvas>
+        </div>
+        <div class="hud-center">
+          <span id="hud-center-text" class="t-tiny">ENEMIES 0 / 5</span>
+          <span class="bar bar-center"><i id="hud-center-bar"></i></span>
+        </div>
+        <div class="hud-right">
+          <div class="coin-box"><i class="coin"></i><b id="hud-coins">0</b></div>
+          <button type="button" id="btn-pause" class="btn-pause" aria-label="Jeda"><span></span><span></span></button>
+        </div>
+      </div>
+
+      <div id="intro" class="intro" hidden>
+        <p id="intro-warning" class="intro-warning">!!  WARNING  !!</p>
+        <p id="intro-title" class="intro-title">LEVEL 1</p>
+        <p id="intro-sub" class="intro-sub">5 musuh menunggu  -  GET READY!</p>
+        <p id="intro-tip" class="intro-tip"></p>
+      </div>
+    </div>
+
+    <!-- Tombol ability: posisinya diatur main.js sesuai layar -->
+    <div id="abilities" class="abilities" hidden></div>
+    <p id="touch-hint" class="touch-hint" hidden>Geser jari di mana saja untuk terbang</p>
+
+    <!-- Menu utama -->
+    <section id="menu" class="screen menu" hidden>
+      <div class="menu-head">
+        <h1 class="title">SKY STRIKER</h1>
+        <p class="subtitle">AIRCRAFT SHOOTER</p>
+      </div>
+      <canvas id="menu-plane" class="menu-plane" aria-hidden="true"></canvas>
+      <nav class="menu-buttons" id="menu-buttons">
+        <button type="button" class="btn" data-menu="start">START MISSION</button>
+        <button type="button" class="btn" data-menu="continue" hidden>LANJUTKAN LEVEL 2</button>
+        <button type="button" class="btn" data-menu="shop">HANGAR / SHOP</button>
+        <button type="button" class="btn" data-menu="settings">PENGATURAN</button>
+      </nav>
+      <p class="menu-info" id="menu-info">Coins: 0    |    Pesawat: Falcon</p>
+      <p class="help" id="menu-help"></p>
+    </section>
+
+    <!-- Hangar / Shop -->
+    <section id="shop" class="screen shop" hidden>
+      <header class="shop-head">
+        <div>
+          <h2 class="t-big">HANGAR</h2>
+          <p class="help">Beli &amp; pilih pesawat terbaikmu</p>
+        </div>
+        <div class="coin-box"><i class="coin"></i><b id="shop-coins">0</b></div>
+      </header>
+      <div class="shop-scroll">
+        <div class="plane-grid" id="plane-grid"></div>
+        <div class="item-row" id="item-row"></div>
+      </div>
+      <p class="shop-msg" id="shop-msg" role="status" aria-live="polite"></p>
+      <p class="help keys-only">Panah = pilih   ENTER/klik = beli / pakai   ESC = kembali</p>
+    </section>
+
+    <!-- Pengaturan -->
+    <section id="settings" class="screen settings" hidden>
+      <div class="panel settings-panel">
+        <h2 class="t-mid">PENGATURAN</h2>
+        <label class="setting"><span>Tembak otomatis</span><input type="checkbox" id="set-auto-fire" role="switch"></label>
+        <label class="setting"><span>Kepekaan geser jari <b id="sens-value">1.3×</b></span><input type="range" id="set-sensitivity" min="0.8" max="2.5" step="0.1"></label>
+        <label class="setting" id="row-vibrate"><span>Getar saat terkena</span><input type="checkbox" id="set-vibrate" role="switch"></label>
+        <button type="button" class="btn" id="btn-fullscreen" hidden>LAYAR PENUH</button>
+        <button type="button" class="btn btn-danger" id="btn-reset">HAPUS SEMUA PROGRES</button>
+        <button type="button" class="btn" id="btn-settings-back">KEMBALI</button>
+        <p class="help" id="app-version"></p>
+      </div>
+    </section>
+
+    <!-- Panel tengah: pause, level selesai, game over -->
+    <div id="overlay" class="overlay" hidden>
+      <div class="panel center-panel" id="overlay-panel">
+        <h2 id="ov-title" class="t-big">PAUSED</h2>
+        <p id="ov-line1" class="t-mid"></p>
+        <p id="ov-line2" class="t-small"></p>
+        <p id="ov-line3" class="t-tiny muted"></p>
+        <div id="ov-buttons" class="ov-buttons"></div>
+      </div>
+    </div>
+
+    <!-- Menang -->
+    <section id="victory" class="screen victory" hidden>
+      <h2 class="title gold">MISSION COMPLETE</h2>
+      <p class="t-mid">Semua boss telah dikalahkan. Langit aman berkat kamu!</p>
+      <p class="t-mid gold" id="victory-coins">Total coins:  0</p>
+      <canvas id="victory-plane" class="menu-plane" aria-hidden="true"></canvas>
+      <button type="button" class="btn selected" id="btn-victory-menu">KEMBALI KE MENU <kbd>ENTER</kbd></button>
+    </section>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

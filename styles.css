@@ -1,0 +1,415 @@
+/* Sky Striker — tampilan. Warna & gaya panel diambil dari HUD notebook. */
+:root {
+  color-scheme: dark;
+  --white: #ffffff;
+  --gold: rgb(255, 205, 70);
+  --red: rgb(255, 70, 80);
+  --green: rgb(90, 230, 120);
+  --cyan: rgb(80, 220, 255);
+  --gray: rgb(150, 155, 180);
+  --panel: rgba(10, 14, 32, 0.67);
+  --panel-strong: rgba(10, 14, 32, 0.88);
+  --edge: rgb(80, 90, 130);
+  --select: rgb(30, 90, 170);
+  --font: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ui: 1;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+  background: #06081a;
+  color: var(--white);
+  font-family: var(--font);
+  font-weight: 700;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+button { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+.app {
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+  overflow: hidden;
+}
+#screen { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* ---------- Teks (ukuran mengikuti font notebook) ---------- */
+.t-big { font-size: clamp(30px, 7vw, 56px); margin: 0; letter-spacing: 0.01em; }
+.t-mid { font-size: clamp(18px, 4.2vw, 30px); margin: 0; }
+.t-small { font-size: clamp(14px, 3.4vw, 20px); margin: 0; }
+.t-tiny { font-size: clamp(12px, 2.9vw, 16px); margin: 0; font-weight: 600; }
+.muted { color: var(--gray); }
+.gold { color: var(--gold); }
+.help { color: var(--gray); font-weight: 500; font-size: clamp(12px, 2.8vw, 15px); margin: 0; }
+.title, .t-big, .t-mid, .intro-title { text-shadow: 2px 2px 0 #000; }
+kbd {
+  font: 600 0.72em var(--font);
+  padding: 1px 6px;
+  margin-left: 8px;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  opacity: 0.75;
+}
+.touch kbd, .touch .keys-only { display: none; }
+
+/* ---------- Panel & tombol ---------- */
+.panel {
+  background: var(--panel-strong);
+  border: 2px solid var(--edge);
+  border-radius: 16px;
+}
+.btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 22px;
+  border: 2px solid var(--edge);
+  border-radius: 12px;
+  background: var(--panel);
+  font-size: clamp(15px, 3.6vw, 20px);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  touch-action: manipulation;
+  text-shadow: 2px 2px 0 #000;
+}
+.btn.selected, .btn:hover {
+  background: var(--select);
+  border-color: var(--cyan);
+  box-shadow: 0 0 34px rgba(30, 90, 160, 0.75);
+}
+.btn:active { transform: translateY(1px); }
+.btn-danger { border-color: rgb(140, 60, 70); color: rgb(255, 160, 165); }
+
+/* ---------- Area dunia & HUD ---------- */
+.stage { position: absolute; pointer-events: none; }
+.hud {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  align-content: start;
+  gap: calc(10px * var(--ui));
+  padding: calc(12px * var(--ui)) calc(14px * var(--ui));
+}
+.hud-panel {
+  background: var(--panel);
+  border: 2px solid rgb(60, 80, 130);
+  border-radius: 12px;
+  padding: calc(10px * var(--ui)) calc(14px * var(--ui));
+}
+.hud-left { width: calc(290px * var(--ui)); display: grid; gap: calc(6px * var(--ui)); }
+.hud-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; white-space: nowrap; }
+.hud .t-small { font-size: calc(19px * var(--ui)); }
+.hud .t-tiny { font-size: calc(15px * var(--ui)); }
+.bar {
+  position: relative;
+  display: block;
+  height: calc(14px * var(--ui));
+  border-radius: 999px;
+  background: rgb(35, 38, 60);
+  outline: 1px solid rgba(200, 205, 230, 0.9);
+  overflow: hidden;
+}
+.bar i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--green); }
+.bar i::after {
+  content: "";
+  position: absolute;
+  left: 2px; right: 2px; top: 1px;
+  height: 33%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+}
+.bar-hp { flex: 1; }
+.lives { width: calc(170px * var(--ui)); height: calc(26px * var(--ui)); display: block; }
+.hud-center { display: grid; justify-items: center; gap: calc(6px * var(--ui)); padding-top: calc(4px * var(--ui)); text-shadow: 2px 2px 0 #000; }
+.hud-center .bar { width: min(100%, calc(300px * var(--ui))); height: calc(8px * var(--ui)); }
+.hud-center.boss .bar { width: min(100%, calc(460px * var(--ui))); height: calc(14px * var(--ui)); }
+.hud-center.boss span:first-child { font-size: calc(19px * var(--ui)); }
+.hud-right { display: grid; justify-items: end; gap: calc(10px * var(--ui)); }
+.coin-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: calc(180px * var(--ui));
+  height: calc(44px * var(--ui));
+  padding: 0 calc(16px * var(--ui)) 0 calc(12px * var(--ui));
+  background: var(--panel);
+  border: 2px solid rgb(90, 80, 40);
+  border-radius: 12px;
+  color: var(--gold);
+  font-size: calc(28px * var(--ui));
+  text-shadow: 2px 2px 0 #000;
+}
+.coin {
+  width: calc(24px * var(--ui));
+  height: calc(24px * var(--ui));
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: inset 0 0 0 calc(5px * var(--ui)) var(--gold), inset 0 0 0 calc(7px * var(--ui)) rgb(153, 123, 42);
+  flex: none;
+}
+.btn-pause {
+  pointer-events: auto;
+  appearance: none;
+  width: calc(48px * var(--ui));
+  height: calc(48px * var(--ui));
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 12px;
+  border: 2px solid var(--edge);
+  background: var(--panel);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.btn-pause span { width: 5px; height: 40%; background: var(--white); border-radius: 2px; }
+
+/* HUD sempit (HP berdiri): progres pindah ke baris kedua */
+.stage.narrow .hud { grid-template-columns: 1fr auto; row-gap: calc(4px * var(--ui)); }
+.stage.narrow .hud-center { grid-column: 1 / -1; grid-row: 2; }
+.stage.narrow .hud-left { width: auto; max-width: calc(250px * var(--ui) + 40px); }
+
+/* ---------- Tulisan level ---------- */
+.intro {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+  padding: 0 16px;
+}
+.intro p { margin: 0; text-shadow: 2px 2px 0 #000; }
+.intro-title { font-size: clamp(44px, 12vw, 86px); }
+.intro-sub { font-size: clamp(14px, 3.6vw, 20px); color: var(--cyan); }
+.intro-tip { font-size: clamp(14px, 3.6vw, 20px); color: var(--gold); max-width: 30ch; }
+.intro-warning { font-size: clamp(30px, 8vw, 56px); color: var(--red); animation: blink 0.5s steps(1) infinite; }
+.intro.boss .intro-title { font-size: clamp(18px, 4.6vw, 30px); }
+.intro.boss .intro-sub { color: var(--gray); }
+@keyframes blink { 50% { visibility: hidden; } }
+
+/* ---------- Tombol ability ---------- */
+.abilities {
+  position: absolute;
+  display: grid;
+  gap: 12px;
+  pointer-events: none;
+}
+.abilities.row { grid-auto-flow: column; }
+.abilities.grid2 { grid-template-columns: repeat(2, auto); }
+.ability {
+  --c: var(--cyan);
+  pointer-events: auto;
+  position: relative;
+  width: var(--size, 64px);
+  height: var(--size, 64px);
+  border-radius: 12px;
+  border: 2px solid rgb(70, 75, 100);
+  background: rgba(10, 14, 32, 0.75);
+  color: var(--c);
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  touch-action: none;
+}
+.ability svg { position: absolute; inset: 18%; width: 64%; height: 64%; }
+.ability.ready { border-color: var(--c); animation: ready 1.25s ease-in-out infinite alternate; }
+.ability.active { border-color: var(--white); }
+.ability.cooling { color: rgb(95, 100, 125); }
+.ability .cover { position: absolute; left: 0; right: 0; top: 0; height: 0; background: rgba(0, 0, 0, 0.55); }
+.ability .cd { position: absolute; inset: 0; display: grid; place-items: center; font-size: calc(var(--size, 64px) * 0.42); color: var(--white); text-shadow: 2px 2px 0 #000; }
+.ability .key { position: absolute; left: 6px; top: 3px; font: 600 13px var(--font); color: var(--white); }
+.touch .ability .key { display: none; }
+.ability:active { transform: scale(0.95); }
+@keyframes ready { to { border-color: rgb(255, 255, 255); } }
+
+.touch-hint {
+  position: absolute;
+  margin: 0;
+  color: var(--gray);
+  font-weight: 500;
+  font-size: 13px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* ---------- Layar penuh (menu, hangar, menang, pengaturan) ---------- */
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  touch-action: pan-y;
+  padding: calc(env(safe-area-inset-top) + 16px) calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 16px) calc(env(safe-area-inset-left) + 16px);
+}
+.menu, .victory {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2.2vh, 18px);
+  text-align: center;
+}
+.title { margin: 0; font-size: clamp(44px, 12vw, 86px); line-height: 1; letter-spacing: 0.02em; }
+.menu-head { position: relative; }
+.menu-head::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 520px; height: 520px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(20, 60, 110, 0.55), transparent 62%);
+  z-index: -1;
+}
+.subtitle { margin: 10px 0 0; color: var(--cyan); font-size: clamp(13px, 3.2vw, 20px); letter-spacing: 0.5em; padding-left: 0.5em; }
+.menu-plane { width: 220px; height: clamp(120px, 24vh, 190px); display: block; }
+.menu-buttons { display: grid; gap: 14px; width: min(340px, 100%); }
+.menu-info { margin: 4px 0 0; color: var(--gold); font-size: clamp(14px, 3.4vw, 20px); text-shadow: 2px 2px 0 #000; white-space: pre; }
+.victory .t-mid { max-width: 34ch; }
+.victory .btn { width: min(360px, 100%); }
+
+/* Hangar */
+.shop { display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+.shop-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.shop-head .coin-box { --ui: 1; min-width: 150px; height: 44px; font-size: 26px; }
+.shop-scroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 8px 2px 4px; }
+.plane-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+.card {
+  appearance: none;
+  text-align: left;
+  border: 2px solid rgb(60, 70, 100);
+  border-radius: 12px;
+  background: rgba(10, 14, 32, 0.78);
+  padding: 12px 14px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.card.selected { border-color: var(--c, var(--gold)); box-shadow: 0 0 40px rgba(var(--glow, 255, 205, 70), 0.28); }
+.plane-card { display: grid; gap: 4px; justify-items: center; }
+.plane-card canvas { width: 120px; height: 104px; display: block; }
+.plane-card .name { font-size: 22px; text-shadow: 2px 2px 0 #000; }
+.plane-card .info { color: var(--gray); font-weight: 500; font-size: 13px; text-align: center; min-height: 2.4em; }
+.stats { width: 100%; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 6px 10px; margin: 4px 0; }
+.stats span { color: var(--gray); font-weight: 600; font-size: 12px; }
+.stats .bar { height: 8px; }
+.plane-card .guns { font-weight: 500; font-size: 13px; }
+.status {
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px 4px;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+}
+.item-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+.item-card { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; min-height: 84px; }
+.item-card .name { font-size: clamp(18px, 4vw, 26px); text-shadow: 2px 2px 0 #000; }
+.item-card .price { text-align: right; font-size: 18px; }
+.item-card .info, .item-card .now { font-weight: 500; font-size: 13px; color: var(--gray); }
+.item-card .now { color: var(--white); text-align: right; }
+.item-row .btn { min-height: 84px; }
+.shop-msg { min-height: 1.4em; margin: 0; text-align: center; font-size: clamp(16px, 4vw, 26px); text-shadow: 2px 2px 0 #000; }
+.shop .help { text-align: center; }
+
+@media (max-width: 1000px) {
+  .plane-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+@media (max-width: 560px) {
+  .plane-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .item-row { grid-template-columns: 1fr; gap: 10px; }
+  .item-row .btn, .item-card { min-height: 64px; }
+  .card { padding: 10px; }
+  .plane-card canvas { width: 104px; height: 90px; }
+  .plane-card .name { font-size: 19px; }
+  .shop-head .coin-box { min-width: 120px; height: 40px; font-size: 22px; }
+}
+
+/* Pengaturan */
+.settings { display: grid; place-items: center; background: rgba(3, 5, 14, 0.86); }
+.settings-panel { width: min(480px, 100%); display: grid; gap: 14px; padding: 22px; }
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 48px;
+  font-size: 17px;
+}
+.setting b { color: var(--cyan); margin-left: 6px; }
+.setting input[type="range"] { width: 44%; accent-color: var(--cyan); }
+.setting input[type="checkbox"] {
+  appearance: none;
+  width: 52px; height: 30px;
+  border-radius: 15px;
+  background: rgb(60, 66, 96);
+  position: relative;
+  flex: none;
+  cursor: pointer;
+}
+.setting input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--white);
+  transition: transform 0.15s;
+}
+.setting input[type="checkbox"]:checked { background: var(--select); box-shadow: inset 0 0 0 2px var(--cyan); }
+.setting input[type="checkbox"]:checked::after { transform: translateX(22px); }
+
+/* Panel tengah */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.55);
+}
+.center-panel {
+  width: min(560px, 100%);
+  padding: 26px 22px;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  text-align: center;
+}
+.center-panel p:empty { display: none; }
+.center-panel.green { border-color: var(--green); }
+.center-panel.green h2 { color: var(--green); }
+.center-panel.red { border-color: var(--red); }
+.center-panel.red h2 { color: var(--red); }
+.center-panel.cyan { border-color: var(--cyan); }
+.ov-buttons { display: grid; gap: 12px; width: 100%; margin-top: 8px; }
+.ov-buttons .btn { width: 100%; }
+#ov-line1 { color: var(--white); }
+.center-panel.green #ov-line1 { color: var(--gold); }
+.center-panel.red #ov-line2 { color: var(--gold); font-size: clamp(13px, 3vw, 16px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-warning, .ability.ready { animation: none; }
+}
+
+/* Bar musuh/boss di luar arena (HP berdiri: di bawah; HP mendatar: panel kanan) */
+.stage.deck .hud, .stage.side .hud { grid-template-columns: 1fr auto; }
+.stage.deck .hud-center, .stage.side .hud-center { --ui: 0.85; position: absolute; }
+.stage.deck .hud-center { left: 12px; right: 12px; top: calc(100% + 10px); }
+.stage.side .hud-center { left: calc(100% + 12px); width: calc(var(--side-w) - 24px); top: 14px; }
+.stage.deck .hud-center .bar, .stage.side .hud-center .bar { width: 100%; }
+.stage.side .hud-center span:first-child { text-align: center; }
